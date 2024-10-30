@@ -102,12 +102,10 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		String name = "student";
 		String pass = "student";
 
-		String sql = "SELECT film.id, film.title, film.description, film.release_year, "
-				+ "film.language_id, film.rental_duration, film.rental_rate, "
-				+ "film.length, film.replacement_cost, film.rating, film.special_features "
-				+ "FROM film "
-				+ "JOIN film_actor ON film.id = film_actor.film_id "
-				+ "WHERE film_actor.actor_id = ?";
+		String sql = "SELECT actor.id, actor.first_name, actor.last_name "
+	               + "FROM actor "
+	               + "JOIN film_actor ON actor.id = film_actor.actor_id "
+	               + "WHERE film_actor.film_id = ?";
 		
 		try (Connection conn = DriverManager.getConnection(URL, name, pass);
 				PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -116,11 +114,11 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-					int actorId = rs.getInt("id");
+					int id = rs.getInt("id");
 					String firstName = rs.getString("first_name");
 					String lastName = rs.getString("last_name");
 
-					Actor actor = new Actor(actorId, firstName, lastName);
+					Actor actor = new Actor(id, firstName, lastName);
 					actors.add(actor);
 
 				}
