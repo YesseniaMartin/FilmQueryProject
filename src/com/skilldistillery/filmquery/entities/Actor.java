@@ -3,10 +3,13 @@ package com.skilldistillery.filmquery.entities;
 import java.util.List;
 import java.util.Objects;
 
-public class Actor {
+import com.skilldistillery.filmquery.app.FilmQueryApp;
+
+public class Actor extends FilmQueryApp{
 	private int actorId;
 	private String firstName;
 	private String lastName;
+	
 	private List<Film> films;
 
 	// Methods

@@ -3,7 +3,9 @@ package com.skilldistillery.filmquery.entities;
 import java.util.List;
 import java.util.Objects;
 
-public class Film {
+import com.skilldistillery.filmquery.app.FilmQueryApp;
+
+public class Film  extends FilmQueryApp {
 
 	private int id;
 	private String title;

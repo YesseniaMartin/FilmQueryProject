@@ -56,16 +56,14 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			List<Actor> actors = findActorsByFilmId(film.getId());
 			// now set its actors
 			film.setActors(actors);
-		
-		rs.close();
-		ps.close();
-		conn.close();
-		
-		
+
+			rs.close();
+			ps.close();
+			conn.close();
+
 		}
 		return film;
-}
-	
+	}
 
 	@Override
 	public Actor findActorById(int actorId) throws SQLException {
@@ -78,14 +76,14 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		PreparedStatement ps = conn.prepareStatement(sql);
 
 		ps.setInt(1, actorId);
-		
+
 		ResultSet rs = ps.executeQuery();
 
 		if (rs.next()) {
 			int id = rs.getInt("id");
 			String firstName = rs.getString("first_name");
 			String lastName = rs.getString("last_name");
-			
+
 			actor = new Actor(id, firstName, lastName);
 
 		}
@@ -102,11 +100,9 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		String name = "student";
 		String pass = "student";
 
-		String sql = "SELECT actor.id, actor.first_name, actor.last_name "
-	               + "FROM actor "
-	               + "JOIN film_actor ON actor.id = film_actor.actor_id "
-	               + "WHERE film_actor.film_id = ?";
-		
+		String sql = "SELECT actor.id, actor.first_name, actor.last_name " + "FROM actor "
+				+ "JOIN film_actor ON actor.id = film_actor.actor_id " + "WHERE film_actor.film_id = ?";
+
 		try (Connection conn = DriverManager.getConnection(URL, name, pass);
 				PreparedStatement ps = conn.prepareStatement(sql)) {
 
