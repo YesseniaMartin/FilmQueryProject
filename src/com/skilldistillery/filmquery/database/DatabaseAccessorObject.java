@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 import com.skilldistillery.filmquery.entities.Actor;
 import com.skilldistillery.filmquery.entities.Film;
 
@@ -83,9 +82,11 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			int id = rs.getInt("id");
 			String firstName = rs.getString("first_name");
 			String lastName = rs.getString("last_name");
-
-			actor = new Actor(id, firstName, lastName);
-
+			
+			actor = new Actor(id, firstName, lastName);	
+			List<Actor> actors = findActorsByFilmId(actorId);
+			actors.add(actor);
+			
 		}
 		rs.close();
 		ps.close();

@@ -9,7 +9,6 @@ public class Actor extends FilmQueryApp{
 	private int actorId;
 	private String firstName;
 	private String lastName;
-	
 	private List<Film> films;
 
 	// Methods
@@ -27,13 +26,6 @@ public class Actor extends FilmQueryApp{
 		this.actorId = sagMemberNumber;
 		this.firstName = firstName;
 		this.lastName = lastName;
-	}
-
-	public Actor(int sagMemberNumber, String firstName, String lastName, List<Film> films) {
-		this.actorId = sagMemberNumber;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.films = films;
 	}
 
 // getters and setters
