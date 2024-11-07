@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,84 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Actor createActor(Actor actor) {
+		// each method manages its own connection
+		String user = "student";
+		String pass = "student";
+		Connection conn = null;
+
+		try {
+			conn = DriverManager.getConnection(URL, user, pass);
+			// start a transaction
+			conn.setAutoCommit(false);
+
+			// We'll be filling in the actor's first and last names
+			String sql = "INSERT INTO actor (first_name, last_name) VALUES (?,?)";
+
+			// compile / optimize the sql into the db, and request the generated keys be
+			// accessable
+			PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+			// bind (assign) the name fields into our sql statements bind vars
+			stmt.setString(1, actor.getFirstName());
+			stmt.setString(2, actor.getLastName());
+
+			// run the query in the database
+			int updateCount = stmt.executeUpdate();
+
+			// check if the INSERT was successful in creating 1 new Actor
+			if (updateCount == 1) {
+				// good news: we can grab this new Actor's id
+				ResultSet keys = stmt.getGeneratedKeys();
+
+				// we're expecting just 1 generated key
+				if (keys.next()) {
+					// grab the generated key (id)
+					int newActorId = keys.getInt(1);
+
+					// change the initial id in our Java entity to actor's 'real' id
+					actor.setId(newActorId);
+
+					// see if this new actor has been in previous films
+					if (actor.getFilms() != null && actor.getFilms().size() > 0) {
+						sql = "INSERT INTO film_actor (film_id, actor_id) VALUES (?,?)";
+						stmt = conn.prepareStatement(sql);
+
+						// associate each film they were in with their new Actor id
+						for (Film film : actor.getFilms()) {
+							stmt.setInt(1, film.getId());
+							stmt.setInt(2, newActorId);
+							updateCount = stmt.executeUpdate();
+						}
+					}
+
+				}
+
+				// an explicit commit of the transaction is required to prevent a rollback
+				conn.commit();
+
+			} else {
+				// something went wrong with the INSERT
+				actor = null;
+			}
+
+			conn.close();
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException sqle2) {
+					System.err.println("Error trying to rollback");
+				}
+			}
+			throw new RuntimeException("Error inserting actor " + actor);
+		}
+
+		return actor;
 	}
 
 	@Override
@@ -82,11 +161,11 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			int id = rs.getInt("id");
 			String firstName = rs.getString("first_name");
 			String lastName = rs.getString("last_name");
-			
-			actor = new Actor(id, firstName, lastName);	
+
+			actor = new Actor(id, firstName, lastName);
 			List<Actor> actors = findActorsByFilmId(actorId);
 			actors.add(actor);
-			
+
 		}
 		rs.close();
 		ps.close();

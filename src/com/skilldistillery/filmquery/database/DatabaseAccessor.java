@@ -13,5 +13,7 @@ public interface DatabaseAccessor {
 
 	public List<Actor> findActorsByFilmId(int filmId) throws SQLException;
 	
+	public Actor createActor(Actor actor) throws SQLException;
+	
 
 }
