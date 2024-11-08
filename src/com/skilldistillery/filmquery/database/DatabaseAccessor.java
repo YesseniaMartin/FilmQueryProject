@@ -15,5 +15,8 @@ public interface DatabaseAccessor {
 	
 	public Actor createActor(Actor actor) throws SQLException;
 	
+	public boolean saveActor(Actor actor) throws SQLException;
+	
+	public boolean deleteActor(Actor actor) throws SQLException;
 
 }
