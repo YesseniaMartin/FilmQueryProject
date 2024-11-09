@@ -22,106 +22,108 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			e.printStackTrace();
 		}
 	}
+
 	public boolean deleteActor(Actor actor) {
 		String user = "student";
-		String pass = "student";  
+		String pass = "student";
 		Connection conn = null;
 
-		  try {
-		    conn = DriverManager.getConnection(URL, user, pass);
-		    // start the transaction
-		    conn.setAutoCommit(false); 
+		try {
+			conn = DriverManager.getConnection(URL, user, pass);
+			// start the transaction
+			conn.setAutoCommit(false);
 
-		    // film_actor is a child of (depends upon) both actor and film tables
-		    String sql = "DELETE FROM film_actor WHERE actor_id = ?";
-		    PreparedStatement stmt = conn.prepareStatement(sql);
-		    stmt.setInt(1, actor.getId());
-		    stmt.executeUpdate();
+			// film_actor is a child of (depends upon) both actor and film tables
+			String sql = "DELETE FROM film_actor WHERE actor_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, actor.getId());
+			stmt.executeUpdate();
 
-		    // child rows for this actor are gone, can remove the Actor (parent) now
-		    sql = "DELETE FROM actor WHERE id = ?";
-		    stmt = conn.prepareStatement(sql);
-		    stmt.setInt(1, actor.getId());
-		    stmt.executeUpdate();
+			// child rows for this actor are gone, can remove the Actor (parent) now
+			sql = "DELETE FROM actor WHERE id = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, actor.getId());
+			stmt.executeUpdate();
 
-		    conn.commit();   
-		    conn.close();          
-		  }
-		  catch (SQLException sqle) {
-		    sqle.printStackTrace();
-		    if (conn != null) {
-		      try { conn.rollback(); }
-		      catch (SQLException sqle2) {
-		        System.err.println("Error trying to rollback");
-		      }
-		    }
-		    return false;
-		  }
-		  return true;
+			conn.commit();
+			conn.close();
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException sqle2) {
+					System.err.println("Error trying to rollback");
+				}
+			}
+			return false;
 		}
-	
+		return true;
+	}
+
 	public boolean saveActor(Actor actor) {
 		String user = "student";
-		String pass = "student";  
+		String pass = "student";
 		Connection conn = null;
 
-		  try {
-		    conn = DriverManager.getConnection(URL, user, pass);
-		    // start the transaction
-		    conn.setAutoCommit(false); 
+		try {
+			conn = DriverManager.getConnection(URL, user, pass);
+			// start the transaction
+			conn.setAutoCommit(false);
 
-		    String sql = "UPDATE actor SET first_name=?, last_name=?  WHERE id=?";
-		    PreparedStatement stmt = conn.prepareStatement(sql);
+			String sql = "UPDATE actor SET first_name=?, last_name=?  WHERE id=?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
 
-		    stmt.setString(1, actor.getFirstName());
-		    stmt.setString(2, actor.getLastName());
-		    stmt.setInt(3, actor.getId());
+			stmt.setString(1, actor.getFirstName());
+			stmt.setString(2, actor.getLastName());
+			stmt.setInt(3, actor.getId());
 
-		    int updateCount = stmt.executeUpdate();
+			int updateCount = stmt.executeUpdate();
 
-		    if (updateCount == 1) {
-		      // We don't know which (if any) of the actor's films have changed, so
-		      // we will replace all the film ids currently associated with this actor
+			if (updateCount == 1) {
+				// We don't know which (if any) of the actor's films have changed, so
+				// we will replace all the film ids currently associated with this actor
 
-		      // remove the old film ids
-		      sql = "DELETE FROM film_actor WHERE actor_id = ?";
-		      stmt = conn.prepareStatement(sql);
-		      stmt.setInt(1, actor.getId());
-		      stmt.executeUpdate();
+				// remove the old film ids
+				sql = "DELETE FROM film_actor WHERE actor_id = ?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, actor.getId());
+				stmt.executeUpdate();
 
-		      // insert the current film ids
-		      sql = "INSERT INTO film_actor (film_id, actor_id) VALUES (?,?)";
-		      stmt = conn.prepareStatement(sql);
+				// insert the current film ids
+				sql = "INSERT INTO film_actor (film_id, actor_id) VALUES (?,?)";
+				stmt = conn.prepareStatement(sql);
 
-		      // iterate through all the actor's current film ids, to
-		      // (re)associate them with this actor
-		      for (Film film : actor.getFilms()) {
-		        stmt.setInt(1, film.getId());
-		        stmt.setInt(2, actor.getId());
-		        updateCount = stmt.executeUpdate();
-		      }
+				// iterate through all the actor's current film ids, to
+				// (re)associate them with this actor
+				for (Film film : actor.getFilms()) {
+					stmt.setInt(1, film.getId());
+					stmt.setInt(2, actor.getId());
+					updateCount = stmt.executeUpdate();
+				}
 
-		      // all data associated with the actor has been updated, so
-		      // let's commit now
-		      conn.commit();  
-		      conn.close();         
-		    }
-		  } catch (SQLException sqle) {
-		    // something went wrong, so the above commit() was never called
-		    // let's undo what we did
-		    sqle.printStackTrace();
-		    if (conn != null) {
-		      try { conn.rollback(); } 
-		      catch (SQLException sqle2) {
-		        System.err.println("Error trying to rollback");
-		      }
-		    }
-		    // not successful in the update
-		    return false;
-		  }
-		  // we rocked the update!
-		  return true;
+				// all data associated with the actor has been updated, so
+				// let's commit now
+				conn.commit();
+				conn.close();
+			}
+		} catch (SQLException sqle) {
+			// something went wrong, so the above commit() was never called
+			// let's undo what we did
+			sqle.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException sqle2) {
+					System.err.println("Error trying to rollback");
+				}
+			}
+			// not successful in the update
+			return false;
 		}
+		// we rocked the update!
+		return true;
+	}
 
 	public Actor createActor(Actor actor) {
 		// each method manages its own connection
@@ -244,6 +246,49 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 	}
 
 	@Override
+	public List<Film> findAllFilms() throws SQLException {
+		List<Film> filmList = new ArrayList<>();
+		String name = "student";
+		String pass = "student";
+
+		String sql = "SELECT * FROM film";
+
+		try (Connection conn = DriverManager.getConnection(URL, name, pass);
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String title = rs.getString("title");
+				String description = rs.getString("description");
+				Integer releaseYear = rs.getInt("release_year");
+				int languageId = rs.getInt("language_id");
+				int rentalDuration = rs.getInt("rental_duration");
+				double rentalRate = rs.getDouble("rental_rate");
+				int length = rs.getInt("length");
+				double replacementCost = rs.getDouble("replacement_cost");
+				String rating = rs.getString("rating");
+				String specialFeatures = rs.getString("special_features");
+
+				Film film = new Film(id, title, description, releaseYear, languageId, rentalDuration, rentalRate,
+						length, replacementCost, rating, specialFeatures);
+
+				List<Actor> actors = findActorsByFilmId(film.getId());
+				film.setActors(actors);
+
+				filmList.add(film);
+
+				rs.close();
+				ps.close();
+				conn.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return filmList;
+	}
+
+	@Override
 	public Actor findActorById(int actorId) throws SQLException {
 		Actor actor = null;
 		String name = "student";
@@ -280,10 +325,8 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		String name = "student";
 		String pass = "student";
 
-		String sql = "SELECT actor.id, actor.first_name, actor.last_name " + 
-					 "FROM actor " + 
-					 "JOIN film_actor ON actor.id = film_actor.actor_id " + 
-					 "WHERE film_actor.film_id = ?";
+		String sql = "SELECT actor.id, actor.first_name, actor.last_name " + "FROM actor "
+				+ "JOIN film_actor ON actor.id = film_actor.actor_id " + "WHERE film_actor.film_id = ?";
 
 		try (Connection conn = DriverManager.getConnection(URL, name, pass);
 				PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -298,7 +341,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 					Actor actor = new Actor(id, firstName, lastName);
 					actors.add(actor);
-					
+
 				}
 				rs.close();
 				ps.close();

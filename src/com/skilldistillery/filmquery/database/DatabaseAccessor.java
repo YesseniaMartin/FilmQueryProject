@@ -18,5 +18,7 @@ public interface DatabaseAccessor {
 	public boolean saveActor(Actor actor) throws SQLException;
 	
 	public boolean deleteActor(Actor actor) throws SQLException;
+	
+	public List<Film> findAllFilms() throws SQLException;
 
 }
