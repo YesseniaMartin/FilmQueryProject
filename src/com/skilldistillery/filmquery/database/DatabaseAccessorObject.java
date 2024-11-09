@@ -202,6 +202,47 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 		return actor;
 	}
+	@Override
+	public Film createFilm(Film aFilm) throws SQLException {
+		String name = "student";
+		String pass = "student";
+
+		String sql = "SELECT * FROM film";
+
+		try (Connection conn = DriverManager.getConnection(URL, name, pass);
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String title = rs.getString("title");
+				String description = rs.getString("description");
+				Integer releaseYear = rs.getInt("release_year");
+				int languageId = rs.getInt("language_id");
+				int rentalDuration = rs.getInt("rental_duration");
+				double rentalRate = rs.getDouble("rental_rate");
+				int length = rs.getInt("length");
+				double replacementCost = rs.getDouble("replacement_cost");
+				String rating = rs.getString("rating");
+				String specialFeatures = rs.getString("special_features");
+
+				Film film = new Film(id, title, description, releaseYear, languageId, rentalDuration, rentalRate,
+						length, replacementCost, rating, specialFeatures);
+
+				List<Actor> actors = findActorsByFilmId(film.getId());
+				film.setActors(actors);
+				actors.add(length, findActorById(id));
+			
+				rs.close();
+				ps.close();
+				conn.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return aFilm;
+	}
+
 
 	@Override
 	public Film findFilmById(int filmId) throws SQLException {
@@ -243,49 +284,6 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 		}
 		return film;
-	}
-
-	@Override
-	public List<Film> findAllFilms() throws SQLException {
-		List<Film> filmList = new ArrayList<>();
-		String name = "student";
-		String pass = "student";
-
-		String sql = "SELECT * FROM film";
-
-		try (Connection conn = DriverManager.getConnection(URL, name, pass);
-				PreparedStatement ps = conn.prepareStatement(sql);
-				ResultSet rs = ps.executeQuery()) {
-
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				String title = rs.getString("title");
-				String description = rs.getString("description");
-				Integer releaseYear = rs.getInt("release_year");
-				int languageId = rs.getInt("language_id");
-				int rentalDuration = rs.getInt("rental_duration");
-				double rentalRate = rs.getDouble("rental_rate");
-				int length = rs.getInt("length");
-				double replacementCost = rs.getDouble("replacement_cost");
-				String rating = rs.getString("rating");
-				String specialFeatures = rs.getString("special_features");
-
-				Film film = new Film(id, title, description, releaseYear, languageId, rentalDuration, rentalRate,
-						length, replacementCost, rating, specialFeatures);
-
-				List<Actor> actors = findActorsByFilmId(film.getId());
-				film.setActors(actors);
-
-				filmList.add(film);
-
-				rs.close();
-				ps.close();
-				conn.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return filmList;
 	}
 
 	@Override
