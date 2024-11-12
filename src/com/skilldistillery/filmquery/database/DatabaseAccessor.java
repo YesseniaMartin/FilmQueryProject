@@ -21,4 +21,6 @@ public interface DatabaseAccessor {
 	
 	public Film createFilm(Film aFilm) throws SQLException;
 
+	public List<Film> searchFilms(String keyword) throws SQLException;
+
 }

@@ -65,6 +65,7 @@ public class Film  extends FilmQueryApp {
 		this.actors = actors;
 		
 	}
+	
 //	getters and setters
 
 	public int getId() {

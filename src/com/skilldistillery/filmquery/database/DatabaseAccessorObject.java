@@ -202,6 +202,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 		return actor;
 	}
+
 	@Override
 	public Film createFilm(Film aFilm) throws SQLException {
 		String name = "student";
@@ -232,7 +233,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				List<Actor> actors = findActorsByFilmId(film.getId());
 				film.setActors(actors);
 				actors.add(length, findActorById(id));
-			
+
 				rs.close();
 				ps.close();
 				conn.close();
@@ -242,7 +243,6 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		}
 		return aFilm;
 	}
-
 
 	@Override
 	public Film findFilmById(int filmId) throws SQLException {
@@ -350,5 +350,44 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			}
 		}
 		return actors;
+	}
+
+	@Override
+	public List<Film> searchFilms(String keyword) throws SQLException {
+		List<Film> result = new ArrayList<>();
+		String name = "student";
+		String pass = "student";
+
+		String sql = "SELECT * FROM film WHERE id = ?";
+
+		Connection conn = DriverManager.getConnection(URL, name, pass);
+		PreparedStatement ps = conn.prepareStatement(sql);
+
+		ps.setString(1, keyword);
+		try (ResultSet rs = ps.executeQuery()) {
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String title = rs.getString("title");
+				String description = rs.getString("description");
+				Integer releaseYear = rs.getInt("release_year");
+				int languageId = rs.getInt("language_id");
+				int rentalDuration = rs.getInt("rental_duration");
+				double rentalRate = rs.getDouble("rental_rate");
+				int length = rs.getInt("length");
+				double replacementCost = rs.getDouble("replacement_cost");
+				String rating = rs.getString("rating");
+				String specialFeatures = rs.getString("special_features");
+
+				Film film = new Film(id, title, description, releaseYear, languageId, rentalDuration, rentalRate,
+						length, replacementCost, rating, specialFeatures);
+
+				result.add(film);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 }

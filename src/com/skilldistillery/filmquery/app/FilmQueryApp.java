@@ -18,7 +18,7 @@ public class FilmQueryApp {
 		FilmQueryApp app = new FilmQueryApp();
 //		app.test();
 		app.launch();
-		
+
 		Actor actor = new Actor("Norma", "Jean");
 	}
 
@@ -114,16 +114,17 @@ public class FilmQueryApp {
 				case 2:
 					System.out.println("Enter a keyword to search for a film:");
 					String keyword = menu.nextLine();
-//				searchFilms(filmList, );
-					List<Film> results = searchFilms(filmList, keyword);
+
+					List<Film> results = db.searchFilms(keyword);
+
 					if (results.isEmpty()) {
 						System.out.println("No films found matching the keyword: " + keyword);
 					} else {
-						System.out.println("Films found:");
+						System.out.println("Results of Films found:");
 						for (Film result : results) {
 							System.out.println(
-									"Title: " + result.getTitle() + ", Year: " + result.getReleaseYear() + ", Rating: "
-											+ result.getRentalRate() + ", Description: " + result.getDescription());
+									"Title: " + (keyword.equals(result.getTitle())) + ", Year: " + result.getReleaseYear() + ", Rating: "
+											+ result.getRentalRate() + ", Description: " + (keyword.equals(result.getDescription())));
 						}
 					}
 					break;
@@ -145,14 +146,16 @@ public class FilmQueryApp {
 	}
 
 	public List<Film> searchFilms(List<Film> films, String keyword) {
-//		 its title, year, rating, and description 
+
 		List<Film> result = new ArrayList<>();
-		String lowerCaseKeyword = keyword.toLowerCase();
+
 		for (Film film : films) {
-			if (film.getTitle().toLowerCase().contains(lowerCaseKeyword)
-					|| String.valueOf(film.getReleaseYear()).contains(lowerCaseKeyword)
-					|| String.valueOf(film.getRentalRate()).contains(lowerCaseKeyword)
-					|| film.getDescription().toLowerCase().contains(lowerCaseKeyword)) {
+			if (film.getTitle().toLowerCase().contains(keyword.toLowerCase())
+					|| film.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
+
+				System.out.println("Title: " + film.getTitle() + ", Description: " + film.getDescription()
+						+ ", Rating: " + film.getReleaseYear() + ", Year: " + film.getReleaseYear());
+
 				result.add(film);
 			}
 		}
