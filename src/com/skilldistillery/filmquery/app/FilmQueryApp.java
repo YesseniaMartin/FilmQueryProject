@@ -85,6 +85,7 @@ public class FilmQueryApp {
 			System.out.println("------------ MENU --------------------");
 			System.out.println("1) Look up a film by its id           ");
 			System.out.println("2) Look up a film by a search keyword ");
+			System.out.println("3) Add a new film                       ");
 			System.out.println("3) Exit the application               ");
 			System.out.println("--------------------------------------");
 
@@ -102,7 +103,7 @@ public class FilmQueryApp {
 				
 				switch (selection) {
 				case 1:
-					System.out.println("Enter the film ID:");
+					System.out.println("Enter the film ID: ");
 					
 					int filmId = menu.nextInt();
 					menu.nextLine();
@@ -138,6 +139,68 @@ public class FilmQueryApp {
 					break;
 					
 				case 3:
+					System.out.println("Enter the film title: ");
+					String title = menu.nextLine();
+					
+					System.out.println("Enter the film title: ");
+					String description = menu.nextLine();
+					
+					System.out.println("Enter the release year: ");
+				    int releaseYear = menu.nextInt();
+				    menu.nextLine();
+				    
+				    System.out.println("Enter the language ID: ");
+				    int languageId = menu.nextInt();
+				    menu.nextLine();
+				    
+				    System.out.println("Enter the rental duration: ");
+				    int rentalDuration = menu.nextInt();
+				    menu.nextLine();
+				    
+				    System.out.println("Enter the rental rate: ");
+				    double rentalRate = menu.nextDouble();
+				    menu.nextLine();
+				    
+				    System.out.println("Enter the film length: ");
+				    int length = menu.nextInt();
+				    menu.nextLine();
+				    
+				    System.out.println("Enter the replacement cost: ");
+				    double replacementCost = menu.nextDouble();
+				    menu.nextLine();
+				    
+				    System.out.println("Enter the rating: ");
+				    String rating = menu.nextLine();
+				    
+				    System.out.println("Enter any special features ('Behind the Scenes'): ");
+				    String specialFeatures = menu.nextLine();
+				   
+				    Film newFilm = new Film();
+				    newFilm.setTitle(title);
+				    newFilm.setDescription(description);
+				    newFilm.setReleaseYear(releaseYear);
+				    newFilm.setLanguageId(languageId);
+				    newFilm.setRentalDuration(rentalDuration);
+				    newFilm.setRentalRate(rentalRate);
+				    newFilm.setLength(length);
+				    newFilm.setReplacementCost(replacementCost);
+				    newFilm.setRating(rating);
+				    newFilm.setSpecialFeatures(specialFeatures);
+				    
+				    try {
+				        Film createdFilm = db.createFilm(newFilm);
+				        if (createdFilm != null) {
+				            System.out.println("New film added successfully with ID: " + createdFilm.getId());
+				        } else {
+				            System.out.println("Failed to add the new film.");
+				        }
+				    } catch (SQLException e) {
+				        System.out.println("Error adding film: " + e.getMessage());
+				        e.printStackTrace();
+				    }
+				    break;
+			
+				case 4:
 					System.out.println("Exiting the application...");
 					running = false; // Exit the loop
 					break;
