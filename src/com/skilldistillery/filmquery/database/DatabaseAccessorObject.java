@@ -358,7 +358,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		String name = "student";
 		String pass = "student";
 
-		String sql = "SELECT * FROM film WHERE id = ?";
+		String sql = "SELECT * FROM film WHERE title = ?";
 
 		Connection conn = DriverManager.getConnection(URL, name, pass);
 		PreparedStatement ps = conn.prepareStatement(sql);

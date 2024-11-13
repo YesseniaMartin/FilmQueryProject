@@ -16,16 +16,18 @@ public class FilmQueryApp {
 
 	public static void main(String[] args) {
 		FilmQueryApp app = new FilmQueryApp();
-//		app.test();
-		app.launch();
+		app.test();
+//		app.launch();
 
 		Actor actor = new Actor("Norma", "Jean");
 	}
 
 	private void test() {
+		
 		Film film;
 		Actor actor;
 		List<Actor> actors;
+		
 
 		try {
 			film = db.findFilmById(16);
@@ -73,7 +75,6 @@ public class FilmQueryApp {
 	}
 
 	private void startUserInterface(Scanner input) {
-		List<Film> filmList = new ArrayList<>();
 
 		// menu here
 		Scanner menu = new Scanner(System.in);
@@ -98,10 +99,14 @@ public class FilmQueryApp {
 			}
 
 			try {
+				
 				switch (selection) {
 				case 1:
 					System.out.println("Enter the film ID:");
+					
 					int filmId = menu.nextInt();
+					menu.nextLine();
+					
 					Film film = db.findFilmById(filmId);
 					if (film != null) {
 						System.out.println("Film found: " + film.getTitle() + ", Year: " + film.getReleaseYear()
@@ -112,23 +117,26 @@ public class FilmQueryApp {
 					break;
 
 				case 2:
-					System.out.println("Enter a keyword to search for a film:");
+					System.out.println("Enter a keyword to search for a film: ");
 					String keyword = menu.nextLine();
 
 					List<Film> results = db.searchFilms(keyword);
 
-					if (results.isEmpty()) {
-						System.out.println("No films found matching the keyword: " + keyword);
-					} else {
+					if (!results.isEmpty()){
+						System.out.println("Numbers of Films found: " + results.size());
 						System.out.println("Results of Films found:");
+						
 						for (Film result : results) {
 							System.out.println(
-									"Title: " + (keyword.equals(result.getTitle())) + ", Year: " + result.getReleaseYear() + ", Rating: "
-											+ result.getRentalRate() + ", Description: " + (keyword.equals(result.getDescription())));
+									"Title: " + result.getTitle() + ", Description: " + result.getDescription() + ", Rating: "
+											+ result.getRating() + ", Year: " + result.getReleaseYear());
+	
 						}
+					} else {
+						System.out.println("No films found matching the keyword: " + keyword);
 					}
 					break;
-
+					
 				case 3:
 					System.out.println("Exiting the application...");
 					running = false; // Exit the loop
@@ -138,28 +146,12 @@ public class FilmQueryApp {
 					System.out.println("Invalid choice. Please select 1, 2, or 3.");
 					break;
 				}
+				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 		menu.close();
-	}
-
-	public List<Film> searchFilms(List<Film> films, String keyword) {
-
-		List<Film> result = new ArrayList<>();
-
-		for (Film film : films) {
-			if (film.getTitle().toLowerCase().contains(keyword.toLowerCase())
-					|| film.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
-
-				System.out.println("Title: " + film.getTitle() + ", Description: " + film.getDescription()
-						+ ", Rating: " + film.getReleaseYear() + ", Year: " + film.getReleaseYear());
-
-				result.add(film);
-			}
-		}
-		return result;
 	}
 
 }
