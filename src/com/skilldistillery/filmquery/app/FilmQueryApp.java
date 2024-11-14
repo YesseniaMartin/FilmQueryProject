@@ -85,8 +85,10 @@ public class FilmQueryApp {
 			System.out.println("------------ MENU --------------------");
 			System.out.println("1) Look up a film by its id           ");
 			System.out.println("2) Look up a film by a search keyword ");
-			System.out.println("3) Add a new film                       ");
-			System.out.println("3) Exit the application               ");
+			System.out.println("3) Add a new film                     ");
+			System.out.println("4) Delete a film                      ");
+			System.out.println("5) Update a film                      ");
+			System.out.println("6) Exit the application               ");
 			System.out.println("--------------------------------------");
 
 			int selection;
@@ -139,6 +141,9 @@ public class FilmQueryApp {
 					break;
 					
 				case 3:
+					System.out.println("Enter the Id of the Film: ");
+					int id = menu.nextInt();
+					
 					System.out.println("Enter the film title: ");
 					String title = menu.nextLine();
 					
@@ -176,6 +181,7 @@ public class FilmQueryApp {
 				    String specialFeatures = menu.nextLine();
 				   
 				    Film newFilm = new Film();
+				    newFilm.setId(id);
 				    newFilm.setTitle(title);
 				    newFilm.setDescription(description);
 				    newFilm.setReleaseYear(releaseYear);
@@ -199,8 +205,13 @@ public class FilmQueryApp {
 				        e.printStackTrace();
 				    }
 				    break;
-			
+				    
 				case 4:
+					System.out.println("Enter the film title you want to delete : ");
+					String deleteFilmTitle = menu.nextLine();
+					
+			
+				case 6:
 					System.out.println("Exiting the application...");
 					running = false; // Exit the loop
 					break;

@@ -60,6 +60,50 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		}
 		return true;
 	}
+	
+	public boolean deleteFilm(Film aFilm) throws SQLException{
+		String user = "student";
+		String pass = "student";
+		boolean isDeleted = false;
+		Connection conn = null;
+
+		String sqlFilmActors = "DELETE FROM film_actor WHERE film_id = ?"; //the child
+		String sqlFilms = "DELETE FROM film WHERE id = ?"; //the parent
+		
+		try {
+			conn = DriverManager.getConnection(URL, user, pass);
+			// start the transaction
+			conn.setAutoCommit(false);
+			
+			
+			//first the child
+			try(PreparedStatement psFilmActors = conn.prepareStatement(sqlFilmActors))  {
+				psFilmActors.setInt(1, aFilm.getId());
+				psFilmActors.executeUpdate();
+			}
+			//second the parent
+			try (PreparedStatement psFilms = conn.prepareStatement(sqlFilms)) {
+				psFilms.setInt(1, aFilm.getId());
+				int filmExecuted = psFilms.executeUpdate();
+				if(filmExecuted > 0) {
+					isDeleted = true;
+				}
+			}
+			
+			conn.commit();
+	} catch (SQLException e) {
+        e.printStackTrace();
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            	}
+			}
+		}
+		
+		return isDeleted;
+	}
 
 	public boolean saveActor(Actor actor) {
 		String user = "student";
@@ -219,7 +263,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 //				ResultSet rs = ps.executeQuery(); 
 
-			ps.setString(2, aFilm.getTitle());
+			ps.setString(2, aFilm.getTitle()); 
 			ps.setString(2, aFilm.getDescription());
 			ps.setInt(3, aFilm.getReleaseYear());
 			ps.setInt(4, aFilm.getLanguageId());
